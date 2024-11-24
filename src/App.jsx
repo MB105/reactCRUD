@@ -35,6 +35,16 @@ function App() {
 
   function updateStudent(student){
     console.log ('update');
+    fetchData(
+      `${STUDENTS_API}/${student.id}`,
+      (student)=>{
+      setStudents(
+        students.map((s)=>(s.id === student.id? {...student}: s ))
+      );
+  },
+      'PUT',
+      student
+    );
   }
 
   function createStudent(student){
