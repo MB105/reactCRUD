@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 
-function PersonForm({blankStudent,studentToEdit, mutateStudent}) {
+function PersonForm({blankStudent,studentToEdit, mutateStudent, classes}) {
 const [student,setStudent]= useState({... studentToEdit})
 
 useEffect(()=>{
   setStudent(studentToEdit);
 }, [studentToEdit]);
 
-function handleChange(event)
-{
+function handleChange(event) {
   const value = event.target.value;
   const name = event.target.id;
-  setStudent({...student, [name]: value});
+
+  // Check if the changed field is the 'classes' select field (multiple selection)
+  if (name === "classes") {
+    const selectedValues = Array.from(event.target.selectedOptions, (option) => parseInt(option.value, 10));
+    setStudent({ ...student, [name]: selectedValues }); // Update student.classes with selected class IDs
+  } else {
+    // Handle regular fields (name, age, email, etc.)
+    setStudent({ ...student, [name]: value });
+  }
 }
 
 function handleSubmit(event){
@@ -31,16 +38,27 @@ function handleSubmit(event){
   <input id="age" type="number" min="1" max="120" placeholder="Enter age" value = {student.age} onChange ={handleChange}/>
   <label htmlFor="email">Email</label>
   <input id="email" type="email" placeholder="Enter email" value = {student.email} onChange ={handleChange} />
-  <label htmlFor="class">Class</label>
-  <select id="class" value = {student.classes} onChange ={handleChange}>
-    <option value="Math 101">Math 101</option>
-    <option value="History 201">History 201</option>
-  </select>
+  <label htmlFor="classes">Classes</label>
+        <select
+          id="classes"
+          multiple
+          value={student.classes}
+          onChange={handleChange}
+        >
+          {/* Dynamically generate options based on classes */}
+          {classes.map((cls) => (
+            <option key={cls.id} value={cls.id}>
+              {cls.name} - {cls.teacher} {/* Show class name and teacher */}
+            </option>
+          ))}
+        </select>
   <button>Add</button>
-  <button onClick={()=> setStudent(blankStudent)}>Reset</button>
+
+  </form>
+  <button  onClick={()=> setStudent(blankStudent)}>Reset</button>
   
   
-</form>
+
 
     </div>
     );

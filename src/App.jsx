@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { fetchData } from './utils/fetchData';
 
 
-const blankStudent = {id: '', name: '', age: '', email: '', classes: [ '' ]};
+const blankStudent = {id: '', name: '', age: '', email: '', classes: [ ]};
 
 
 function App() {
@@ -18,9 +18,9 @@ function App() {
 
   //Edit students
 
-  function editStudent(person)
+  function editStudent(student)
   {
-    setStudentTOEdit(person)
+    setStudentTOEdit(student)
   }
 
   function mutateStudent(student){
@@ -35,6 +35,16 @@ function App() {
 
   function updateStudent(student){
     console.log ('update');
+    fetchData(
+      `${STUDENTS_API}/${student.id}`,
+      (student)=>{
+      setStudents(
+        students.map((s)=>(s.id === student.id? {...student}: s ))
+      );
+  },
+      'PUT',
+      student
+    );
   }
 
   function createStudent(student){
@@ -60,8 +70,8 @@ function App() {
 
   useEffect(() => {
     // Fetch both students and classes
-    getStudents((data) => setStudents(data));
-    getClasses((data) => setClasses(data));
+    getStudents(); // This will automatically update the students state
+    getClasses();  // This will automatically update the classes state
   }, []);
 
   return (
@@ -71,6 +81,7 @@ function App() {
     blankStudent ={blankStudent}
     studentToEdit ={studentToEdit}
     mutateStudent={mutateStudent}
+    classes={classes} 
       
       />
       <StudentList 
